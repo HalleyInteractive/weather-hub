@@ -1,0 +1,16 @@
+{
+  "esversion": 6,
+  "undef": true,
+  "unused": true,
+  "predef": [
+    "require",
+    "console",
+    "global",
+    "module",
+    "setInterval",
+    "process",
+    "describe",
+    "it",
+    "__dirname"
+  ]
+}

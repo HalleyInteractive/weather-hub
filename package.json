@@ -1,0 +1,30 @@
+{
+  "name": "weather-hub",
+  "version": "1.0.0",
+  "description": "Centralised Hub to store all temperature and humidity readings.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HalleyInteractive/weather-hub.git"
+  },
+  "author": "Niels Overwijn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HalleyInteractive/weather-hub/issues"
+  },
+  "homepage": "https://github.com/HalleyInteractive/weather-hub#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "nedb": "^1.8.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3",
+    "should": "^10.0.0",
+    "supertest": "^1.2.0"
+  }
+}
