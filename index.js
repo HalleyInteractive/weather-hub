@@ -8,7 +8,8 @@
   const Reading = require('./database/reading.js');
   const DataStore = require('nedb');
   const db = new DataStore({
-    filename: 'database/nodes.db',
+    filename: process.env.NODE_ENV === 'test' ?
+        'database-test/nodes.db' : 'database/nodes.db',
     autoload: true,
     timestampData: true
   });
@@ -106,10 +107,6 @@
     // If so, try to ping address
   };
 
-  let pingNode = function(node) {
-    // Ping node return attempt succses.
-  };
-
   let getReading = function(node) {
     let promise = new Promise((resolve, reject) => {
       db.findOne({id: node.id})
@@ -137,4 +134,5 @@
     return promise;
   };
 
+module.exports = app;
 }());
