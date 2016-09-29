@@ -45,13 +45,23 @@
     });
   });
 
-  app.get('/nodes/:id/reading', (request, response) => {
+  app.get('/nodes/:id/reading/last', (request, response) => {
     getReading(request.params.id)
     .then((document) => {
       response.json(document);
     })
     .catch((error) => {
       response.send(error);
+    });
+  });
+
+  app.get('/nodes/:id/reading/:limit?', (request, response) => {
+    getReadings(request.params.id, request.params.limit)
+    .then((readings) => {
+      response.json(readings);
+    })
+    .catch((error) => {
+      response.status(500).send(error);
     });
   });
 
@@ -154,10 +164,6 @@
   let logReading = function(nodeId, reading) {
     let readingDocument = Object.assign(Reading, reading);
     return new Promise((resolve, reject) => {
-      if(!node_db.hasOwnProperty(nodeId)) {
-        node_db[nodeId] = new DataStore({
-          filename: `database/nodes/${nodeId}.db`,
-          autoload: true,
           timestampData: true,
           inMemoryOnly: process.env.NODE_ENV === 'test'
         });
