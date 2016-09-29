@@ -13,6 +13,9 @@
     timestampData: true,
     inMemoryOnly: process.env.NODE_ENV === 'test'
   });
+  const DB_COMPACTION_INTERVAL = 1000 * 60 * 10;
+
+  db.persistence.setAutocompactionInterval(DB_COMPACTION_INTERVAL);
 
   app.use(bodyParser.json());
 
