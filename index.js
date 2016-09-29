@@ -164,10 +164,7 @@
   let logReading = function(nodeId, reading) {
     let readingDocument = Object.assign(Reading, reading);
     return new Promise((resolve, reject) => {
-          timestampData: true,
-          inMemoryOnly: process.env.NODE_ENV === 'test'
-        });
-      }
+      setupNodeDatabase(nodeId);
       node_db[nodeId].insert(readingDocument, (error, storedDocument) => {
         if(error) {
           reject(error);
@@ -175,6 +172,17 @@
         resolve(storedDocument);
       });
     });
+  };
+
+  let setupNodeDatabase = function(nodeId) {
+    if(!node_db.hasOwnProperty(nodeId)) {
+      node_db[nodeId] = new DataStore({
+        filename: `database/nodes/${nodeId}.db`,
+        autoload: true,
+        timestampData: true,
+        inMemoryOnly: process.env.NODE_ENV === 'test'
+      });
+    }
   };
 
 module.exports.app = app;
