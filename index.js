@@ -172,5 +172,4 @@
   };
 
 module.exports.app = app;
-module.exports.db = db;
 }());

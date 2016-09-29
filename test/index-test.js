@@ -9,7 +9,6 @@
   let chaiHttp = require('chai-http');
   let server = require('./../index.js');
   let app = server.app;
-  let db = server.db;
   let expect = chai.expect;
   let nodeObject = require('../database/node.js');
   let node = {};
