@@ -8,10 +8,10 @@
   const Reading = require('./database/reading.js');
   const DataStore = require('nedb');
   const db = new DataStore({
-    filename: process.env.NODE_ENV === 'test' ?
-        'database-test/nodes.db' : 'database/nodes.db',
+    filename: 'database/nodes.db',
     autoload: true,
-    timestampData: true
+    timestampData: true,
+    inMemoryOnly: process.env.NODE_ENV === 'test'
   });
 
   app.use(bodyParser.json());
