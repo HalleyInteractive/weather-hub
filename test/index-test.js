@@ -171,6 +171,36 @@
       });
     });
 
+    describe('/GET all readings', () => {
+      it('it should GET all readings from test1 node', (done) => {
+        chai.request(app)
+        .get(`/nodes/${insertResult.test1.id}/reading`)
+        .end((error, result) => {
+          expect(result).to.have.status(200);
+          expect(result.body).to.be.a('array');
+          expect(result.body[0].temperature).to.equal(testReading2.temperature);
+          expect(result.body[0].humidity).to.equal(testReading2.humidity);
+          expect(result.body[1].temperature).to.equal(testReading1.temperature);
+          expect(result.body[1].humidity).to.equal(testReading1.humidity);
+          done();
+        });
+      });
+    });
+
+    describe('/GET limited readings', () => {
+      it('it should GET 1 reading from test1 node', (done) => {
+        chai.request(app)
+        .get(`/nodes/${insertResult.test1.id}/reading/1`)
+        .end((error, result) => {
+          expect(result).to.have.status(200);
+          expect(result.body).to.be.a('array');
+          expect(result.body[0].temperature).to.equal(testReading2.temperature);
+          expect(result.body[0].humidity).to.equal(testReading2.humidity);
+          done();
+        });
+      });
+    });
+
   });
 
 }());
