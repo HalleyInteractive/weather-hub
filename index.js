@@ -174,6 +174,22 @@
     });
   };
 
+  let getReadings = function(nodeId, limit = 100) {
+    return new Promise((resolve, reject) => {
+      setupNodeDatabase(nodeId);
+      node_db[nodeId].find()
+      .limit(limit)
+      .sort({ createdAt: -1})
+      .projection({temperature: 1, humidity: 1, createdAt: 1})
+      .exec((error, reading) => {
+        if(error) {
+          reject(error);
+        }
+        resolve(reading);
+      });
+    });
+  };
+
   let setupNodeDatabase = function(nodeId) {
     if(!node_db.hasOwnProperty(nodeId)) {
       node_db[nodeId] = new DataStore({
