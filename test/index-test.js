@@ -134,7 +134,7 @@
     describe('/GET testReading1', () => {
       it('it should GET testReading1 on test1 node', (done) => {
         chai.request(app)
-        .get(`/nodes/${insertResult.test1.id}/reading`)
+        .get(`/nodes/${insertResult.test1.id}/reading/last`)
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.be.a('object');
@@ -160,7 +160,7 @@
     describe('/GET testReading2', () => {
       it('it should GET testReading2 on test1 node', (done) => {
         chai.request(app)
-        .get(`/nodes/${insertResult.test1.id}/reading`)
+        .get(`/nodes/${insertResult.test1.id}/reading/last`)
         .end((err, res) => {
           expect(res).to.have.status(200);
           expect(res.body).to.be.a('object');
