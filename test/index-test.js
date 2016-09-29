@@ -35,9 +35,7 @@
       node = Object.assign(
         {_id:'test', createdAt:null, updatedAt:null},
         nodeObject);
-      db.remove({type:'node'}, { multi: true }, (err, removed) => {
-        done();
-      });
+      done();
     });
 
     describe('/GET nodes', () => {
