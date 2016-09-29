@@ -13,6 +13,7 @@
     timestampData: true,
     inMemoryOnly: process.env.NODE_ENV === 'test'
   });
+  const node_db = {};
   const DB_COMPACTION_INTERVAL = 1000 * 60 * 10;
 
   db.persistence.setAutocompactionInterval(DB_COMPACTION_INTERVAL);
@@ -67,10 +68,13 @@
   app.put('/nodes/:id/reading', (request, response) => {
     setReading(request.params.id, request.body)
     .then(() => {
-      response.status(200).send('');
-    })
-    .catch((error) => {
-      response.send(error);
+      logReading(request.params.id, request.body)
+      .then(() => {
+        response.status(200).send('');
+      })
+      .catch((error) => {
+        response.send(error);
+      });
     });
   });
 
@@ -145,6 +149,26 @@
       });
     });
     return promise;
+  };
+
+  let logReading = function(nodeId, reading) {
+    let readingDocument = Object.assign(Reading, reading);
+    return new Promise((resolve, reject) => {
+      if(!node_db.hasOwnProperty(nodeId)) {
+        node_db[nodeId] = new DataStore({
+          filename: `database/nodes/${nodeId}.db`,
+          autoload: true,
+          timestampData: true,
+          inMemoryOnly: process.env.NODE_ENV === 'test'
+        });
+      }
+      node_db[nodeId].insert(readingDocument, (error, storedDocument) => {
+        if(error) {
+          reject(error);
+        }
+        resolve(storedDocument);
+      });
+    });
   };
 
 module.exports.app = app;
