@@ -4,41 +4,109 @@
   //During the test the env variable is set to test
   process.env.NODE_ENV = 'test';
 
-  const DataStore = require('nedb');
-  const db = new DataStore({
-    filename: process.env.NODE_ENV === 'test' ?
-    'test/testdb.db' : 'database/nodes.db',
-    autoload: true,
-    timestampData: true
-  });
-
   //Require the dev-dependencies
   let chai = require('chai');
   let chaiHttp = require('chai-http');
   let server = require('./../index.js');
-  let should = chai.should();
+  let app = server.app;
+  let db = server.db;
+  let expect = chai.expect;
+  let nodeObject = require('../database/node.js');
+  let node = {};
+  let insertResult = {
+    test1: null,
+    test2: null
+  };
 
   chai.use(chaiHttp);
-  //Our parent block
 
   describe('Nodes', () => {
-    beforeEach((done) => {
-      db.remove({}, { multi: true }, () => {
+    before((done) => {
+      node = Object.assign(
+        {_id:'test', createdAt:null, updatedAt:null},
+        nodeObject);
+      db.remove({type:'node'}, { multi: true }, (err, removed) => {
         done();
       });
     });
 
-    /*
-    * Test the /GET route
-    */
     describe('/GET nodes', () => {
-      it('it should GET all the nodes', (done) => {
-        chai.request(server)
+      it('it should GET no nodes, empty', (done) => {
+        chai.request(app)
         .get('/nodes')
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('array');
-          res.body.length.should.be.eql(0);
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('array');
+          expect(res.body.length).to.equal(0);
+          done();
+        });
+      });
+    });
+
+    describe('/PUT node id:test1', () => {
+      it('it should add a node', (done) => {
+        chai.request(app)
+        .put('/nodes')
+        .send({id:'test1'})
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          insertResult.test1 = res.body;
+          expect(insertResult.test1).to.have.all.keys(node);
+          done();
+        });
+      });
+    });
+
+    describe('/PUT node id:test2', () => {
+      it('it should add a node', (done) => {
+        chai.request(app)
+        .put('/nodes')
+        .send({id:'test2'})
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          insertResult.test2 = res.body;
+          expect(insertResult.test1).to.have.all.keys(node);
+          done();
+        });
+      });
+    });
+
+    describe('/GET nodes', () => {
+      it('it should GET all the nodes', (done) => {
+        chai.request(app)
+        .get('/nodes')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('array');
+          expect(res.body.length).to.equal(2);
+          done();
+        });
+      });
+    });
+
+    describe('/GET test1 node', () => {
+      it('it should GET the test1 node', (done) => {
+        chai.request(app)
+        .get(`/nodes/${insertResult.test1.id}`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.all.keys(node);
+          expect(res.body.id).to.equal('test1');
+          done();
+        });
+      });
+    });
+
+    describe('/GET test2 node', () => {
+      it('it should GET the test2 node', (done) => {
+        chai.request(app)
+        .get(`/nodes/${insertResult.test2.id}`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.all.keys(node);
+          expect(res.body.id).to.equal('test2');
           done();
         });
       });
