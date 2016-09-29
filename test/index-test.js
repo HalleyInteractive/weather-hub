@@ -18,6 +18,16 @@
     test2: null
   };
 
+  let testReading1 = {
+    temperature: 30,
+    humidity: 40
+  };
+
+  let testReading2 = {
+    temperature: 35,
+    humidity: 44
+  };
+
   chai.use(chaiHttp);
 
   describe('Nodes', () => {
@@ -107,6 +117,58 @@
           expect(res.body).to.be.a('object');
           expect(res.body).to.have.all.keys(node);
           expect(res.body.id).to.equal('test2');
+          done();
+        });
+      });
+    });
+
+    describe('/PUT testReading1', () => {
+      it('it should PUT testReading1 on test1 node', (done) => {
+        chai.request(app)
+        .put(`/nodes/${insertResult.test1.id}/reading`)
+        .send(testReading1)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          done();
+        });
+      });
+    });
+
+    describe('/GET testReading1', () => {
+      it('it should GET testReading1 on test1 node', (done) => {
+        chai.request(app)
+        .get(`/nodes/${insertResult.test1.id}/reading`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body.temperature).to.equal(testReading1.temperature);
+          expect(res.body.humidity).to.equal(testReading1.humidity);
+          done();
+        });
+      });
+    });
+
+    describe('/PUT testReading2', () => {
+      it('it should PUT testReading2 on test1 node', (done) => {
+        chai.request(app)
+        .put(`/nodes/${insertResult.test1.id}/reading`)
+        .send(testReading2)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          done();
+        });
+      });
+    });
+
+    describe('/GET testReading2', () => {
+      it('it should GET testReading2 on test1 node', (done) => {
+        chai.request(app)
+        .get(`/nodes/${insertResult.test1.id}/reading`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body.temperature).to.equal(testReading2.temperature);
+          expect(res.body.humidity).to.equal(testReading2.humidity);
           done();
         });
       });
