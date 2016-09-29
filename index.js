@@ -41,6 +41,16 @@
     });
   });
 
+  app.get('/nodes/:id/reading', (request, response) => {
+    getReading(request.params.id)
+    .then((document) => {
+      response.json(document);
+    })
+    .catch((error) => {
+      response.send(error);
+    });
+  });
+
   app.put('/nodes', (request, response) => {
     setNode(request.body)
     .then((storedDocument) => {
