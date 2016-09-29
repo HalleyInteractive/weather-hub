@@ -147,5 +147,6 @@
     return promise;
   };
 
-module.exports = app;
+module.exports.app = app;
+module.exports.db = db;
 }());
