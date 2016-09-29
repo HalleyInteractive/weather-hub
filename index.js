@@ -64,7 +64,7 @@
   app.put('/nodes/:id/', (request, response) => {
     setReading(request.params.id, request.body)
     .then(() => {
-      response.status(200);
+      response.status(200).send('');
     })
     .catch((error) => {
       response.send(error);
