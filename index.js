@@ -117,9 +117,9 @@
     // If so, try to ping address
   };
 
-  let getReading = function(node) {
+  let getReading = function(nodeId) {
     let promise = new Promise((resolve, reject) => {
-      db.findOne({id: node.id})
+      db.findOne({id: nodeId})
       .projection({temperature: 1, humidity: 1 })
       .exec((error, reading) => {
         if(error) {
@@ -131,10 +131,10 @@
     return promise;
   };
 
-  let setReading = function(node, reading) {
+  let setReading = function(nodeId, reading) {
     let readingDocument = Object.assign(Reading, reading);
     let promise = new Promise((resolve, reject) => {
-      db.update({id: node.id}, {$set: readingDocument}, (error) => {
+      db.update({id: nodeId}, {$set: readingDocument}, (error) => {
         if(error) {
           reject(error);
         }
