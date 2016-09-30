@@ -4,6 +4,11 @@
   const Node = require('./database/node.js');
   const Reading = require('./database/reading.js');
   const DataStore = require('nedb');
+
+  /**
+  * Main database for all nodes.
+  * @type {DataStore}
+  */
   const db = new DataStore({
     filename: 'database/nodes.db',
     autoload: true,
@@ -11,10 +16,27 @@
     inMemoryOnly: process.env.NODE_ENV === 'test'
   });
   const node_db = {};
+
+  /**
+  * Stores node specific database references, these are used to log readings.
+  * @type {Object}
+  */
+
+  /**
+  * Interval in which to clean the database.
+  * @type {Number}
+  */
   const DB_COMPACTION_INTERVAL = 1000 * 60 * 10;
 
+  // Cleans up the database, removes old update lines.
   db.persistence.setAutocompactionInterval(DB_COMPACTION_INTERVAL);
 
+
+  /**
+  * Retrieves all stored nodes from the database.
+  * @return {Promise} promise that resolves with an array of all nodes stored
+  *     in the database or rejects with an error message.
+  */
   let getNodes = function() {
     return new Promise((resolve, reject) => {
       db.find({ type: 'node' }, function (err, docs) {
@@ -27,6 +49,13 @@
   };
 
   let getNode = function(id) {
+
+  /**
+  * Retrieves a specific node from the database.
+  * @param {String} nodeId ID of the node to retrieve.
+  * @return {Promise} promise Resolves with the node or rejects with an error
+  *     message.
+  */
     return new Promise((resolve, reject) => {
       db.findOne({ id: id }, (error, document) => {
         if(error) {
@@ -37,6 +66,13 @@
     });
   };
 
+
+  /**
+  * Stores a new node in the database.
+  * @param {Object} node Object containing all information for the node.
+  * @return {Promise} promise Resolves with the inserted node or rejects with an
+  *     error message.
+  */
   let setNode = function(node) {
     let nodeDocument = Object.assign(Node, node);
     return new Promise((resolve, reject) => {
@@ -49,6 +85,14 @@
     });
   };
 
+
+  /**
+  * Retrieves the last reading of a specific node from the database.
+  * @param {String} nodeId ID of the node.
+  * @return {Promise} promise Resolve returns the last reading and rejects sends
+  *     back an error.
+  * @example Return example {temperature:23, humidity:55}
+  */
   let getReading = function(nodeId) {
     return new Promise((resolve, reject) => {
       db.findOne({id: nodeId})
@@ -64,6 +108,13 @@
 
   let setReading = function(nodeId, reading) {
     let readingDocument = Object.assign(Reading, reading);
+
+  /**
+  * Stores a reading to the database.
+  * @param {String} nodeId ID of the node.
+  * @param {Object} reading Object containing the reading data,
+  * @param {Number} reading.temperature {}
+  */
     return new Promise((resolve, reject) => {
       db.update({id: nodeId}, {$set: readingDocument}, (error) => {
         if(error) {
@@ -74,6 +125,12 @@
     });
   };
 
+
+  /**
+  * Stores a reading in the nodes own database. This database only contains
+  * readings for this node.
+  * @param {String} nodeId ID of the node.
+  */
   let logReading = function(nodeId, reading) {
     let readingDocument = Object.assign(Reading, reading);
     return new Promise((resolve, reject) => {
@@ -87,6 +144,15 @@
     });
   };
 
+
+  /**
+  * Retrieves n amount of readings from a specific node.
+  * @param {String} nodeId ID of the node to retrieve readings from.
+  * @param {Number} limit Optional parameter to define the limit of readings,
+  *     defaults to 100 if no value provided.
+  * @return {Promise} promise Returns an array of readings if resolves and an
+  *     error if rejects.
+  */
   let getReadings = function(nodeId, limit = 100) {
     return new Promise((resolve, reject) => {
       setupNodeDatabase_(nodeId);
@@ -107,12 +173,21 @@
     // Determine if last seen was not too long ago.
     // If so, try to ping address
     return timestamp;
+
+  /**
+  * Checks if the nodes last update is within 2 times it's update frequency.
+  * @param {Object} node Node object from the database.
+  * @param {Number} timestamp Timestamp of the current time.
+  * @return {Boolean} isOnline Returns if the node is "online".
+  */
   };
 
 
+  /**
   let setupNodeDatabase_ = function(nodeId) {
     if(!node_db.hasOwnProperty(nodeId)) {
-      node_db[nodeId] = new DataStore({
+    if(!nodeDb.hasOwnProperty(nodeId)) {
+      nodeDb[nodeId] = new DataStore({
         filename: `database/nodes/${nodeId}.db`,
         autoload: true,
         timestampData: true,
