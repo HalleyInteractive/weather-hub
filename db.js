@@ -15,12 +15,12 @@
     timestampData: true,
     inMemoryOnly: process.env.NODE_ENV === 'test'
   });
-  const node_db = {};
 
   /**
   * Stores node specific database references, these are used to log readings.
   * @type {Object}
   */
+  const nodeDb = {};
 
   /**
   * Interval in which to clean the database.
@@ -48,7 +48,6 @@
     });
   };
 
-  let getNode = function(id) {
 
   /**
   * Retrieves a specific node from the database.
@@ -56,8 +55,9 @@
   * @return {Promise} promise Resolves with the node or rejects with an error
   *     message.
   */
+  let getNode = function(nodeId) {
     return new Promise((resolve, reject) => {
-      db.findOne({ id: id }, (error, document) => {
+      db.findOne({id: nodeId}, (error, document) => {
         if(error) {
           reject(error);
         }
@@ -106,8 +106,6 @@
     });
   };
 
-  let setReading = function(nodeId, reading) {
-    let readingDocument = Object.assign(Reading, reading);
 
   /**
   * Stores a reading to the database.
@@ -115,8 +113,9 @@
   * @param {Object} reading Object containing the reading data,
   * @param {Number} reading.temperature {}
   */
+  let setReading = function(nodeId, reading = Reading) {
     return new Promise((resolve, reject) => {
-      db.update({id: nodeId}, {$set: readingDocument}, (error) => {
+      db.update({id: nodeId}, {$set: reading}, (error) => {
         if(error) {
           reject(error);
         }
@@ -135,7 +134,7 @@
     let readingDocument = Object.assign(Reading, reading);
     return new Promise((resolve, reject) => {
       setupNodeDatabase_(nodeId);
-      node_db[nodeId].insert(readingDocument, (error, storedDocument) => {
+      nodeDb[nodeId].insert(readingDocument, (error, storedDocument) => {
         if(error) {
           reject(error);
         }
@@ -156,7 +155,7 @@
   let getReadings = function(nodeId, limit = 100) {
     return new Promise((resolve, reject) => {
       setupNodeDatabase_(nodeId);
-      node_db[nodeId].find()
+      nodeDb[nodeId].find()
       .limit(limit)
       .sort({ createdAt: -1})
       .projection({temperature: 1, humidity: 1, createdAt: 1})
@@ -169,10 +168,6 @@
     });
   };
 
-  let isOnline = function(timestamp) {
-    // Determine if last seen was not too long ago.
-    // If so, try to ping address
-    return timestamp;
 
   /**
   * Checks if the nodes last update is within 2 times it's update frequency.
@@ -180,12 +175,16 @@
   * @param {Number} timestamp Timestamp of the current time.
   * @return {Boolean} isOnline Returns if the node is "online".
   */
+  let isOnline = function(node, timestamp) {
+    return new Date(node.updatedAt).getTime() + node.frequency * 2 < timestamp;
   };
 
 
   /**
+  * Creates database for provided node ID if needed.
+  * @param {String} nodeId ID of the node to create a database for.
+  */
   let setupNodeDatabase_ = function(nodeId) {
-    if(!node_db.hasOwnProperty(nodeId)) {
     if(!nodeDb.hasOwnProperty(nodeId)) {
       nodeDb[nodeId] = new DataStore({
         filename: `database/nodes/${nodeId}.db`,
