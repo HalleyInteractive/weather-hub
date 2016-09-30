@@ -2,8 +2,8 @@
   'use strict';
 
   const Reading = {
-    temperature: 0,
-    humidity: 0
+    temperature: null,
+    humidity: null
   };
 
   module.exports = Reading;
