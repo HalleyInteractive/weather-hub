@@ -15,7 +15,7 @@
       response.json(nodes);
     })
     .catch((error) => {
-      response.send(error);
+      response.status(500).send(error);
     });
   });
 
@@ -25,7 +25,7 @@
       response.json(document);
     })
     .catch((error) => {
-      response.send(error);
+      response.status(500).send(error);
     });
   });
 
@@ -35,7 +35,7 @@
       response.json(document);
     })
     .catch((error) => {
-      response.send(error);
+      response.status(500).send(error);
     });
   });
 
@@ -55,7 +55,7 @@
       response.json(storedDocument);
     })
     .catch((error) => {
-      response.send(error);
+      response.status(500).send(error);
     });
   });
 
@@ -67,7 +67,7 @@
         response.status(200).send('');
       })
       .catch((error) => {
-        response.send(error);
+        response.status(500).send(error);
       });
     });
   });
