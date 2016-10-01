@@ -4,6 +4,9 @@
   const router = require('express').Router();
   const db = require('./db.js');
 
+  /**
+  * Returns the version number
+  */
   router.get('/', function (req, res) {
     let pkg = require('./package.json');
     res.send(pkg.version);
