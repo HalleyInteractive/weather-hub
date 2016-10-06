@@ -63,9 +63,16 @@
   });
 
   router.put('/nodes/:id/reading', (request, response) => {
-    db.setReading(request.params.id, request.body)
+    let reading = request.body;
+    if(reading.hasOwnProperty('temperature')) {
+      reading.temperature = parseFloat(reading.temperature);
+    }
+    if(reading.hasOwnProperty('humidity')) {
+      reading.humidity = parseFloat(reading.humidity);
+    }
+    db.setReading(request.params.id, reading)
     .then(() => {
-      db.logReading(request.params.id, request.body)
+      db.logReading(request.params.id, reading)
       .then(() => {
         response.status(200).send('');
       })
