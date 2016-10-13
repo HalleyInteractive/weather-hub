@@ -1,6 +1,10 @@
 (function() {
   'use strict';
 
+  // Manually setting timezone.
+  // TODO: Need a better way of doing this.
+  process.env.TZ = 'Europe/London';
+
   const express = require('express');
   const bodyParser = require('body-parser');
   const app = express();
